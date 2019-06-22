@@ -31,20 +31,29 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 export default {
   name: 'AppLogin',
   data () {
     return {
       loginForm: {
-        mobile: '',
+        mobile: '15639395581',
         code: ''
       }
     }
   },
   methods: {
     handleLogin () {},
-    handleSend () {}
+    handleSend () {
+      // console.log('快给我验证码')
+      const { mobile } = this.loginForm
+      axios({
+        method: 'GET',
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+      }).then(res => {
+        // console.log(res.data)
+      })
+    }
   }
 }
 </script>
