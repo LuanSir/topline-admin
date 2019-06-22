@@ -6,11 +6,18 @@
         <img src="./logo_index.png" alt="黑马头条">
       </div>
       <div class="login-form">
-        <el-form :model="loginForm">
-          <el-form-item>
+        <!--
+          表单验证
+          rules 配置验证规则
+          将需要验证的字段通过prop属性配置到 el-form-item 组件上
+          ref  获取表单组件，可以手动调用表单组件的验证方法
+        -->
+        <!-- ref后的名字是自己随便起的 -->
+        <el-form :model="loginForm" :rules="rules" ref="loginForm">
+          <el-form-item prop="mobile">
             <el-input v-model="loginForm.mobile" placeholder="手机号"></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="code">
             <!-- 支持栅格布局， 一共24列 -->
             <el-col :span="12">
               <el-input v-model="loginForm.code" placeholder="验证码"></el-input>
@@ -21,7 +28,14 @@
           </el-form-item>
           <el-form-item>
             <!-- 给组件加class，会作用到根元素 -->
-            <el-button class="btn-login" type="primary" @click="handleLogin">登录</el-button>
+            <el-button
+            class="btn-login"
+            type="primary"
+            @click="handleLogin"
+            :loading="loginLoading"
+            >
+            登录
+            </el-button>
             <!-- <el-button>取消</el-button> -->
           </el-form-item>
         </el-form>
@@ -43,11 +57,34 @@ export default {
         mobile: '',
         code: ''
       },
+      loginLoading: false, // 登录按钮的loading 状态
+      rules: { // 表单验证规则
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { min: 11, max: 11, message: '长度11个字符', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { min: 6, max: 6, message: '长度在6个字符', trigger: 'blur' }
+        ]
+      },
       captchaObj: null
     }
   },
   methods: {
     handleLogin () {
+      // 表单组件有一个方法，validate 可以用于获取当前表单的验证状态
+      this.$refs['loginForm'].validate(valid => {
+        if (!valid) {
+          return
+        }
+        // 验证通过，调用发送请求登录的方法
+        this.sunmitLogin()
+      })
+    },
+    // 为了代码优化美观，把发请求登陆的操作封装到一个方法中，可以调用
+    sunmitLogin () {
+      this.loginLoading = true
       axios({
         method: 'POST',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
@@ -62,6 +99,7 @@ export default {
             message: '恭喜你，登录成功',
             type: 'success'
           })
+          this.loginLoading = false
           // 登录成功，跳转到主页，建议路由跳转都是用 name 去跳转，路由传参非常方便
           this.$router.push({
             name: 'home'
@@ -72,6 +110,7 @@ export default {
           if (err.response.status === 400) {
             this.$message.error('登录失败，手机号或验证码错误')
           }
+          this.loginLoading = false
         })
     },
     handleSend () {
