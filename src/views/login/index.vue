@@ -40,14 +40,40 @@ export default {
   data () {
     return {
       loginForm: {
-        mobile: '15639395581',
+        mobile: '',
         code: ''
       },
       captchaObj: null
     }
   },
   methods: {
-    handleLogin () {},
+    handleLogin () {
+      axios({
+        method: 'POST',
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+        data: this.loginForm // POST请求数据放到data中
+      })
+        .then(res => {
+          // >=200 && <400 的状态码都会进入到这里
+          // console.log(res.data)
+          // Element 提供的消息提示组件
+          // 这也是组件调用的一种形式
+          this.$message({
+            message: '恭喜你，登录成功',
+            type: 'success'
+          })
+          // 登录成功，跳转到主页，建议路由跳转都是用 name 去跳转，路由传参非常方便
+          this.$router.push({
+            name: 'home'
+          })
+        })
+        .catch(err => {
+          // >=400 的状态码都会进入catch 中
+          if (err.response.status === 400) {
+            this.$message.error('登录失败，手机号或验证码错误')
+          }
+        })
+    },
     handleSend () {
       // console.log('快给我验证码')
       const { mobile } = this.loginForm
@@ -94,11 +120,14 @@ export default {
                 axios({
                   method: 'GET',
                   url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
-                  params: {// 专门用来传递query查询字符串参数
-                    challenge, validate, seccode
+                  params: {
+                    // 专门用来传递query查询字符串参数
+                    challenge,
+                    validate,
+                    seccode
                   }
                 }).then(res => {
-                  console.log(res.data)
+                  // console.log(res.data)
                 })
               })
           }
