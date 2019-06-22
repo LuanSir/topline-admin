@@ -84,6 +84,22 @@ export default {
               })
               .onSuccess(function () {
                 // var result = captchaObj.getValidate()
+                // console.log(captchaObj.getValidate())
+                const result = captchaObj.getValidate()
+                const challenge = result.geetest_challenge
+                const validate = result.geetest_validate
+                const seccode = result.geetest_seccode
+
+                // 调用获取短信验证码接口，发送短信，上面是给接口所需要的参数赋值
+                axios({
+                  method: 'GET',
+                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+                  params: {// 专门用来传递query查询字符串参数
+                    challenge, validate, seccode
+                  }
+                }).then(res => {
+                  console.log(res.data)
+                })
               })
           }
         )
