@@ -32,6 +32,9 @@
 
 <script>
 import axios from 'axios'
+// 我们建议把没有提供npm包的第三方包都放到项目的src/vendor目录中
+// gt.js会提供一个全局函数 initGeetest
+import '@/vendor/gt.js'
 export default {
   name: 'AppLogin',
   data () {
