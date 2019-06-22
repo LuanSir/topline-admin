@@ -42,7 +42,8 @@ export default {
       loginForm: {
         mobile: '15639395581',
         code: ''
-      }
+      },
+      captchaObj: null
     }
   },
   methods: {
@@ -50,11 +51,42 @@ export default {
     handleSend () {
       // console.log('快给我验证码')
       const { mobile } = this.loginForm
+      // 如果已经初始化过了，直接调用captchaObj对象的verify()方法，captchaObj对象只有初始化之后才会有
+      // 如果没有初始化再执行后面的请求代码，这样防止每次不管验证成不成功都发送请求
+      if (this.captchaObj) {
+        return this.captchaObj.verify() // 调用verify()方法才会弹出验证码
+      }
+
       axios({
         method: 'GET',
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
       }).then(res => {
         // console.log(res.data)
+        const data = res.data.data
+        window.initGeetest(
+          // 加上window 前缀表示initGeetest是全局成员
+          {
+            // 以下配置参数来自服务端 SDK
+            gt: data.gt,
+            challenge: data.challenge,
+            offline: !data.success,
+            new_captcha: data.new_captcha,
+            product: 'bind' // 隐藏按钮式
+          },
+          captchaObj => {
+            // 这里可以调用验证实例 captchaObj 的实例方法
+            // console.log(captchaObj)
+            this.captchaObj = captchaObj
+            captchaObj
+              .onReady(function () {
+                // 验证码ready之后才能调用verify方法显示验证码
+                captchaObj.verify() // 现实验证码
+              })
+              .onSuccess(function () {
+                // var result = captchaObj.getValidate()
+              })
+          }
+        )
       })
     }
   }
