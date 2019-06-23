@@ -23,7 +23,7 @@
               <el-input v-model="loginForm.code" placeholder="验证码"></el-input>
             </el-col>
             <el-col :span="10" :offset="2">
-              <el-button @click="handleSend">获取验证码</el-button>
+              <el-button @click="handleSend">{{ text }}</el-button>
             </el-col>
           </el-form-item>
           <el-form-item>
@@ -57,6 +57,7 @@ export default {
         mobile: '',
         code: ''
       },
+
       loginLoading: false, // 登录按钮的loading 状态
       rules: { // 表单验证规则
         mobile: [
@@ -68,7 +69,9 @@ export default {
           { min: 6, max: 6, message: '长度在6个字符', trigger: 'blur' }
         ]
       },
-      captchaObj: null
+      captchaObj: null,
+      text: '发送验证码',
+      flag: 60
     }
   },
   methods: {
@@ -147,9 +150,22 @@ export default {
                 // 验证码ready之后才能调用verify方法显示验证码
                 captchaObj.verify() // 现实验证码
               })
-              .onSuccess(function () {
+              .onSuccess(() => {
                 // var result = captchaObj.getValidate()
                 // console.log(captchaObj.getValidate())
+                // 图形验证成功之后，发送验证码按钮开始倒计时
+                this.text = `${this.flag}秒后重新发送`
+                // console.log(this.text, this.flag);
+                let flag2 = window.setInterval(() => {
+                  this.text = `${--this.flag}秒后重新发送`
+                  if (this.flag === 0) {
+                    // console.log (123)
+                    window.clearInterval(flag2)
+                    this.text = '重新发送'
+                    this.flag = 60
+                  }
+                }, 1000)
+
                 const result = captchaObj.getValidate()
                 const challenge = result.geetest_challenge
                 const validate = result.geetest_validate
