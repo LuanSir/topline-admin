@@ -16,6 +16,11 @@ export default new Router({
       component: () => import('@/views/home') // @表示 src 目录，无论你当前文件在哪里，@都是src
     },
     {
+      name: 'layout',
+      path: '/layout',
+      component: () => import('@/views/layout')
+    },
+    {
       name: 'login',
       path: '/login',
       component: () => import('@/views/login')
