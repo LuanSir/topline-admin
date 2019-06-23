@@ -23,7 +23,7 @@
               <el-input v-model="loginForm.code" placeholder="验证码"></el-input>
             </el-col>
             <el-col :span="10" :offset="2">
-              <el-button @click="handleSend">{{ text }}</el-button>
+              <el-button @click="handleSend" :disabled="disabled">{{ text }}</el-button>
             </el-col>
           </el-form-item>
           <el-form-item>
@@ -81,9 +81,11 @@ export default {
           { pattern: /true/, message: '请同意用户协议', trigger: 'change' }
         ]
       },
-      captchaObj: null,
-      text: '发送验证码',
-      flag: 60
+      captchaObj: null, // 通过initGeetest 得到的极验验证码对象
+      text: '发送验证码', // 按钮的文字
+      flag: 60, // 定时器的默认倒计时时间
+      disabled: false,
+      sendMobile: '' // 保存初始化验证码之后发送短信的手机号
     }
   },
   methods: {
@@ -134,21 +136,39 @@ export default {
         if (errorMessage.trim().length > 0) {
           return
         }
-        // 手机号有效，初始化验证码插件
-        this.showGeetest()
+        // 验证手机号通过，校验是否有验证码插件对象
+        if (this.captchaObj) {
+          // 手机号有效，初始化验证码插件
+          // this.showGeetest()
+          // 如果用户输入的手机号和之前初始化的验证码手机号不一致，就基于当前手机号码重新初始化
+          // 否则，直接verify显示
+          if (this.loginForm.mobile !== this.sendMobile) {
+            // 删除上一个手机号留下的DOM节点
+            document.body.removeChild(document.querySelector('.geetest_panel'))
+
+            // 重新初始化验证码插件
+            this.showGeetest()
+          } else {
+            // 一致，直接verify
+            this.captchaObj.verify()
+          }
+        } else {
+          // 如果没有，执行发送请求，直接初始化
+          this.showGeetest()
+        }
       })
     },
     showGeetest () {
-      const { mobile } = this.loginForm
+      // const { mobile } = this.loginForm
       // 如果已经初始化过了，直接调用captchaObj对象的verify()方法，captchaObj对象只有初始化之后才会有
       // 如果没有初始化再执行后面的请求代码，这样防止每次不管验证成不成功都发送请求
-      if (this.captchaObj) {
-        return this.captchaObj.verify() // 调用verify()方法才会弹出验证码
-      }
 
       axios({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+        // 调用this.loginForm.mobile，获取每次输入的最近的手机号
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${
+          this.loginForm.mobile
+        }`
       }).then(res => {
         // console.log(res.data)
         const data = res.data.data
@@ -167,22 +187,28 @@ export default {
             // console.log(captchaObj)
             this.captchaObj = captchaObj
             captchaObj
-              .onReady(function () {
+              .onReady(() => {
                 // 验证码ready之后才能调用verify方法显示验证码
+                this.sendMobile = this.loginForm.mobile
                 captchaObj.verify() // 现实验证码
               })
               .onSuccess(() => {
                 // var result = captchaObj.getValidate()
                 // console.log(captchaObj.getValidate())
                 // 图形验证成功之后，发送验证码按钮开始倒计时
+                // 图形验证成功，给disabled赋值为true，按钮禁用
+                this.disabled = true
                 this.text = `${this.flag}秒后重新发送`
                 // console.log(this.text, this.flag);
                 let flag2 = window.setInterval(() => {
+                  // 启动定时器
                   this.text = `${--this.flag}秒后重新发送`
                   if (this.flag === 0) {
                     // console.log (123)
                     window.clearInterval(flag2)
                     this.text = '重新发送'
+                    // 定时器时间结束，解禁按钮
+                    this.disabled = false
                     this.flag = 60
                   }
                 }, 1000)
@@ -195,7 +221,10 @@ export default {
                 // 调用获取短信验证码接口，发送短信，上面是给接口所需要的参数赋值
                 axios({
                   method: 'GET',
-                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+                  // 调用this.loginForm.mobile，获取每次输入的最近的手机号
+                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${
+                    this.loginForm.mobile
+                  }`,
                   params: {
                     // 专门用来传递query查询字符串参数
                     challenge,
