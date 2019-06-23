@@ -27,15 +27,21 @@
             </el-col>
           </el-form-item>
           <el-form-item>
+            <el-checkbox v-model="loginForm.agree"></el-checkbox>
+            <span>
+              我已阅读并同意
+              <a href="#">用户协议</a>和
+              <a href="#">隐私条款</a>
+            </span>
+          </el-form-item>
+          <el-form-item>
             <!-- 给组件加class，会作用到根元素 -->
             <el-button
-            class="btn-login"
-            type="primary"
-            @click="handleLogin"
-            :loading="loginLoading"
-            >
-            登录
-            </el-button>
+              class="btn-login"
+              type="primary"
+              @click="handleLogin"
+              :loading="loginLoading"
+            >登录</el-button>
             <!-- <el-button>取消</el-button> -->
           </el-form-item>
         </el-form>
@@ -55,11 +61,13 @@ export default {
     return {
       loginForm: {
         mobile: '',
-        code: ''
+        code: '',
+        agree: ''
       },
 
       loginLoading: false, // 登录按钮的loading 状态
-      rules: { // 表单验证规则
+      rules: {
+        // 表单验证规则
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { min: 11, max: 11, message: '长度11个字符', trigger: 'blur' }
@@ -67,6 +75,10 @@ export default {
         code: [
           { required: true, message: '请输入验证码', trigger: 'blur' },
           { min: 6, max: 6, message: '长度在6个字符', trigger: 'blur' }
+        ],
+        agree: [
+          { required: true, message: '请同意用户协议', trigger: 'change' },
+          { pattern: /true/, message: '请同意用户协议', trigger: 'change' }
         ]
       },
       captchaObj: null,
@@ -118,6 +130,15 @@ export default {
     },
     handleSend () {
       // console.log('快给我验证码')
+      this.$refs['loginForm'].validateField('mobile', errorMessage => {
+        if (errorMessage.trim().length > 0) {
+          return
+        }
+        // 手机号有效，初始化验证码插件
+        this.showGeetest()
+      })
+    },
+    showGeetest () {
       const { mobile } = this.loginForm
       // 如果已经初始化过了，直接调用captchaObj对象的verify()方法，captchaObj对象只有初始化之后才会有
       // 如果没有初始化再执行后面的请求代码，这样防止每次不管验证成不成功都发送请求
