@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Header component</p>
+    <p>App component</p>
   </div>
 </template>
 
