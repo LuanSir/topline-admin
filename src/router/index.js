@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import nprogress from 'nprogress'
+import nprogress from 'nprogress'
 
 Vue.use(Router)
 
@@ -45,6 +45,8 @@ const router = new Router({
 // 所有的路由导航都会经过路由拦截器，to:去哪；from从哪来；next:通过的方法
 // 使用路由拦截器处理页面访问权限
 router.beforeEach((to, from, next) => {
+  // 进度条开始走
+  nprogress.start()
   // 获取登录用户信息
   const userinfo = window.localStorage.getItem('user_info')
 
@@ -66,6 +68,11 @@ router.beforeEach((to, from, next) => {
       next()
     }
   }
+})
+
+// 路由导航完成时会进入这里
+router.afterEach((to, from) => {
+  nprogress.done()
 })
 
 export default router
