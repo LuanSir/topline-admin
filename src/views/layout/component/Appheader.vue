@@ -4,8 +4,8 @@
     <el-col :span="10" :offset="10">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          <img width="30px" src="http://toutiao.meiduo.site/Fkj6tQi3xJwVXi1u2swCElotfdCi">
-          15639395581
+          <img width="30px" :src="userinfo.photo">
+          {{ userinfo.name }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -22,7 +22,15 @@
 export default {
   name: 'APPheader',
   data () {
-    return {}
+    return {
+      userinfo: {}
+    }
+  },
+  // 调用生命周期函数，在进入该路由组件的时候就获取到用户信息并显示出来
+  // 调用JSON.parse方法，将json字符串转换成对象
+  created () {
+    this.userinfo = JSON.parse(window.localStorage.getItem('user_info'))
+    // console.log(this.userinfo)
   }
 }
 </script>

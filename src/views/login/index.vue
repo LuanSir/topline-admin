@@ -108,6 +108,10 @@ export default {
         data: this.loginForm // POST请求数据放到data中
       })
         .then(res => {
+          // 登录成功，将接口返回的用户信息储存到本地
+          // 本地存储只能储存字符串，所以调用JSON.stringify（）方法把数据转换成json字符串
+          window.localStorage.setItem('user_info', JSON.stringify(res.data.data))
+
           // >=200 && <400 的状态码都会进入到这里
           // console.log(res.data)
           // Element 提供的消息提示组件
