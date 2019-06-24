@@ -101,6 +101,7 @@ export default {
     },
     // 为了代码优化美观，把发请求登陆的操作封装到一个方法中，可以调用
     sunmitLogin () {
+      // 发送登录请求，登录按钮显示登陆中
       this.loginLoading = true
       axios({
         method: 'POST',
@@ -120,6 +121,7 @@ export default {
             message: '恭喜你，登录成功',
             type: 'success'
           })
+          // 登录成功，登录按钮加载中不再显示，登录按钮可以点击
           this.loginLoading = false
           // 登录成功，跳转到主页，建议路由跳转都是用 name 去跳转，路由传参非常方便
           this.$router.push({
@@ -131,6 +133,7 @@ export default {
           if (err.response.status === 400) {
             this.$message.error('登录失败，手机号或验证码错误')
           }
+          // 登录失败，登录按钮重新放开，可点击
           this.loginLoading = false
         })
     },
