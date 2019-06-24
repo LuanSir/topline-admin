@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+// import nprogress from 'nprogress'
 
 Vue.use(Router)
 
