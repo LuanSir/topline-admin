@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 // 我们建议把没有提供npm包的第三方包都放到项目的src/vendor目录中
 // gt.js会提供一个全局函数 initGeetest
 import '@/vendor/gt.js'
@@ -103,9 +103,9 @@ export default {
     sunmitLogin () {
       // 发送登录请求，登录按钮显示登陆中
       this.loginLoading = true
-      axios({
+      this.$http({
         method: 'POST',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/authorizations`,
+        url: `/authorizations`,
         data: this.loginForm // POST请求数据放到data中
       })
         .then(res => {
@@ -170,10 +170,10 @@ export default {
       // 如果已经初始化过了，直接调用captchaObj对象的verify()方法，captchaObj对象只有初始化之后才会有
       // 如果没有初始化再执行后面的请求代码，这样防止每次不管验证成不成功都发送请求
 
-      axios({
+      this.$http({
         method: 'GET',
         // 调用this.loginForm.mobile，获取每次输入的最近的手机号
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${
+        url: `/captchas/${
           this.loginForm.mobile
         }`
       }).then(res => {
@@ -226,10 +226,10 @@ export default {
                 const seccode = result.geetest_seccode
 
                 // 调用获取短信验证码接口，发送短信，上面是给接口所需要的参数赋值
-                axios({
+                this.$http({
                   method: 'GET',
                   // 调用this.loginForm.mobile，获取每次输入的最近的手机号
-                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${
+                  url: `/sms/codes/${
                     this.loginForm.mobile
                   }`,
                   params: {
