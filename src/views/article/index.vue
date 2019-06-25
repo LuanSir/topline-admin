@@ -35,19 +35,44 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <!-- 列表去区 -->
+    <!-- 列表区 -->
     <el-card class="list-card">
       <div slot="header" class="clearfix">
         <span>卡片名称</span>
         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
       </div>
-      <el-table class="list-table" :data="tableData" style="width: 100%">
-        <el-table-column prop="date" label="日期" width="180"></el-table-column>
-        <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-        <el-table-column prop="address" label="地址"></el-table-column>
+      <!-- table表格是个组件，不需要手动创建遍历只需要把数据给el-table的data属性就行了
+          然后配置el-table-column展示需要的数据字段即可
+      -->
+      <el-table class="list-table" :data="articles" style="width: 100%">
+        <el-table-column prop="cover.images[0]" label="封面" width="180">
+          <!-- 表格列默认只能输出文本，如果需要自定义里面的内容，则需要 -->
+          <!-- slot-scope是插槽作用域，值scope是起的名字，scope中有个成员叫row
+             也就是scope.row就是当前遍历项对象
+             自定义列模板，el-table-column 的 prop 就没有意义了
+          -->
+          <template slot-scope="scope">
+            <img width="30" :src="scope.row.cover.images[0]" alt>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="title" label="标题" width="180"></el-table-column>
+        <el-table-column prop="pubdate" label="发布日期" width="180"></el-table-column>
+        <el-table-column prop="status" label="状态"></el-table-column>
       </el-table>
       <!-- 分页 -->
-      <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+      <!-- -、分多少页
+              每页多大，默认十条/页，我们接口若无指定也是10条
+              有多少条数据
+           二：页面改变加载对应的页码数据
+      -->
+      <!-- @current-change分页组件的自定义事件，页码改变事件 -->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="totalCount"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
     </el-card>
   </div>
 </template>
@@ -60,6 +85,7 @@ export default {
   name: 'ArticleList',
   data () {
     return {
+      articles: [],
       form: {
         name: '',
         region: '',
@@ -71,28 +97,29 @@ export default {
         desc: '',
         value1: ''
       },
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
+      totalCount: 0
+      // tableData: [
+      //   {
+      //     date: "2016-05-02",
+      //     name: "王小虎",
+      //     address: "上海市普陀区金沙江路 1518 弄"
+      //   },
+      //   {
+      //     date: "2016-05-04",
+      //     name: "王小虎",
+      //     address: "上海市普陀区金沙江路 1517 弄"
+      //   },
+      //   {
+      //     date: "2016-05-01",
+      //     name: "王小虎",
+      //     address: "上海市普陀区金沙江路 1519 弄"
+      //   },
+      //   {
+      //     date: "2016-05-03",
+      //     name: "王小虎",
+      //     address: "上海市普陀区金沙江路 1516 弄"
+      //   }
+      // ]
     }
   },
 
@@ -101,17 +128,33 @@ export default {
   // token说明:在Authorization 请求头中携带的token，格式为"Bearer "拼接上token，注意Bearer后有一个空格
   // token在本地储存的user_info中，所以要先拿到本地存储
   created () {
-    this.$http({
-      method: 'GET',
-      url: '/articles'
-      // headers: { // 自定义发送请求头,字段名必须叫Authorization,
-      //   Authorization: `Bearer ${userinfo.token}`
-      // }
-    }).then(data => {
-      console.log(data)
-    })
+    this.loadArticles()
   },
   methods: {
+    loadArticles (page = 1) {
+      // 参数默认值
+      this.$http({
+        method: 'GET',
+        url: '/articles',
+        params: {
+          // query查询数据写到这里传输
+          page, // 请求数据的页码，不传默认为1
+          per_page: 10 // 请求数据的每页大小，不传默认为0
+        }
+        // headers: { // 自定义发送请求头,字段名必须叫Authorization,
+        //   Authorization: `Bearer ${userinfo.token}`
+        // }
+      }).then(data => {
+        // console.log(data);
+        this.articles = data.results // 列表数据
+        this.totalCount = data.total_count // 总记录数
+      })
+    },
+    handleCurrentChange (page) {
+      // console.log(page)
+      // 当页码发生改变的时候，请求改页码对应的数据
+      this.loadArticles(page)
+    },
     onSubmit () {
       console.log('submit!')
     }

@@ -50,7 +50,7 @@ axios.interceptors.response.use(response => { // >=200 && <400的状态码，会
   // 通过打印出来错误能够得到状态码
   const status = error.response.status
   if (status === 401) {
-    // 此时务必要删除本地存储中的用户数据信息
+    // 此时务必要删除本地存储中的用户数据信息，因为token无效，需要重新登录获取
     window.localStorage.removeItem('user_info')
     // 然后跳转到登录页面
     router.push({
