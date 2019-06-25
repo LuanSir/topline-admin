@@ -53,6 +53,8 @@
 </template>
 
 <script>
+// 获取本地储存用户登录信息
+const userinfo = JSON.parse(window.localStorage.getItem('user_info'))
 export default {
   name: 'ArticleList',
   data () {
@@ -91,6 +93,22 @@ export default {
         }
       ]
     }
+  },
+
+  // 使用生命周期钩子，在文章列表页打开的时候直接发送请求，显示文章
+  // 除了登录相关页面，其他的页面都需要授权，使用token,把token放到请求头中
+  // token说明:在Authorization 请求头中携带的token，格式为"Bearer "拼接上token，注意Bearer后有一个空格
+  // token在本地储存的user_info中，所以要先拿到本地存储
+  created () {
+    this.$http({
+      method: 'GET',
+      url: '/articles',
+      headers: { // 自定义发送请求头,字段名必须叫Authorization,
+        Authorization: `Bearer ${userinfo.token}`
+      }
+    }).then(res => {
+      console.log(res)
+    })
   },
   methods: {
     onSubmit () {
