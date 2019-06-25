@@ -108,10 +108,10 @@ export default {
         url: `/authorizations`,
         data: this.loginForm // POST请求数据放到data中
       })
-        .then(res => {
+        .then(data => {
           // 登录成功，将接口返回的用户信息储存到本地
           // 本地存储只能储存字符串，所以调用JSON.stringify（）方法把数据转换成json字符串
-          window.localStorage.setItem('user_info', JSON.stringify(res.data.data))
+          window.localStorage.setItem('user_info', JSON.stringify(data))
 
           // >=200 && <400 的状态码都会进入到这里
           // console.log(res.data)
@@ -176,9 +176,10 @@ export default {
         url: `/captchas/${
           this.loginForm.mobile
         }`
-      }).then(res => {
+      }).then(data => {
         // console.log(res.data)
-        const data = res.data.data
+        // 因为在响应拦截器已经拿到data了，所以这里就不需要了
+        // const data = res.data.data
         window.initGeetest(
           // 加上window 前缀表示initGeetest是全局成员
           {
@@ -238,7 +239,7 @@ export default {
                     validate,
                     seccode
                   }
-                }).then(res => {
+                }).then(data => {
                   // console.log(res.data)
                 })
               })

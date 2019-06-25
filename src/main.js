@@ -18,7 +18,7 @@ axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 // axios请求拦截器，所有使用axios发出的请求都会先经过这里然后再发出去
 axios.interceptors.request.use(config => {
   // 因为所有的请求都要经过这里，所以可以把之前手动加上的自定义发送的请求头放在这里
-  // 给每一个请求都给予token授权,所有需要提供token的请求都可以直接去用了
+  // 给每一个请求都给予token授权,所有需要提供token的请求都可以直接去用了，但是登录请求不需要
   // 因为token在本地储存的用户登录信息中，所以要先获取用户登录信息
   // 调用JSON.parse（）方法是把JSON字符串转换成对象
   const userinfo = JSON.parse(window.localStorage.getItem('user_info'))
@@ -26,16 +26,37 @@ axios.interceptors.request.use(config => {
   // return config是允许通过的方式，没有的话请求就发不出去了
   // config是本次请求相关的配置对象，是一个对象，所以可以修改里面的属性
   // console.log(config)
-  config.headers.Authorization = `Bearer ${userinfo.token}`
+  // 因为登录请求不需要token所以在这里要判断一下经过的请求有没有unserinfo，
+  // 有unserinfo说明已经登录了，请求就需要token,没有的话说明没登录，没有登录的话会有401状态码报错，会进入到响应拦截器处理
+  if (userinfo) { // 如果登录了，请求才需要token，登录相关接口不需要token，想要也没有
+    config.headers.Authorization = `Bearer ${userinfo.token}`
+  }
   return config
 }, error => {
   return Promise.reject(error)
 })
 
 // axios的响应拦截器，所有响应回来的数据都会先经过这里
-axios.interceptors.response.use(response => {
-  return response
-}, error => {
+// 可以在响应拦截器中统一的定制收到的数据格式
+axios.interceptors.response.use(response => { // >=200 && <400的状态码，会进入这里
+  // console.log('response =>', response)
+
+  // 这里return出去什么，外面的请求响应的数据就是什么
+  // 在这里处理响应出去的数据格式
+  return response.data.data
+}, error => { // >400的状态码会进入这里，处理错误
+  // console.log('response error =>')
+  // console.dir(error)
+  // 通过打印出来错误能够得到状态码
+  const status = error.response.status
+  if (status === 401) {
+    // 此时务必要删除本地存储中的用户数据信息
+    window.localStorage.removeItem('user_info')
+    // 然后跳转到登录页面
+    router.push({
+      name: 'login'
+    })
+  }
   return Promise.reject(error)
 })
 
