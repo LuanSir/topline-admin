@@ -54,7 +54,8 @@
 
 <script>
 // 获取本地储存用户登录信息
-const userinfo = JSON.parse(window.localStorage.getItem('user_info'))
+// 调用JSON.parse（）方法是把JSON字符串转换成对象
+// const userinfo = JSON.parse(window.localStorage.getItem('user_info'))
 export default {
   name: 'ArticleList',
   data () {
@@ -102,10 +103,10 @@ export default {
   created () {
     this.$http({
       method: 'GET',
-      url: '/articles',
-      headers: { // 自定义发送请求头,字段名必须叫Authorization,
-        Authorization: `Bearer ${userinfo.token}`
-      }
+      url: '/articles'
+      // headers: { // 自定义发送请求头,字段名必须叫Authorization,
+      //   Authorization: `Bearer ${userinfo.token}`
+      // }
     }).then(res => {
       console.log(res)
     })

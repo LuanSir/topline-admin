@@ -15,6 +15,30 @@ import axios from 'axios'
 // 路径中的 / ，多退少补
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 
+// axios请求拦截器，所有使用axios发出的请求都会先经过这里然后再发出去
+axios.interceptors.request.use(config => {
+  // 因为所有的请求都要经过这里，所以可以把之前手动加上的自定义发送的请求头放在这里
+  // 给每一个请求都给予token授权,所有需要提供token的请求都可以直接去用了
+  // 因为token在本地储存的用户登录信息中，所以要先获取用户登录信息
+  // 调用JSON.parse（）方法是把JSON字符串转换成对象
+  const userinfo = JSON.parse(window.localStorage.getItem('user_info'))
+  // console.log('请求发送出去了')
+  // return config是允许通过的方式，没有的话请求就发不出去了
+  // config是本次请求相关的配置对象，是一个对象，所以可以修改里面的属性
+  // console.log(config)
+  config.headers.Authorization = `Bearer ${userinfo.token}`
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
+// axios的响应拦截器，所有响应回来的数据都会先经过这里
+axios.interceptors.response.use(response => {
+  return response
+}, error => {
+  return Promise.reject(error)
+})
+
 // 因为几乎每个组件都会使用axios，频繁的 import 就变得非常麻烦，我们可以把一些常用的成员放到Vue.prototype(vue实例原型)中
 // 就可以在组建中直接this.xxx使用了
 // 为什么？因为所有组件都是 Vue 的实例
