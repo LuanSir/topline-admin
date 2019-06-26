@@ -13,7 +13,7 @@ import axios from 'axios'
 // 也就是说配置了这个东西，你就不用每次都写长长的 http://xxxx
 // 只需要，例如 axios({ url: '/authorizations' })
 // 路径中的 / ，多退少补
-axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
 
 // axios请求拦截器，所有使用axios发出的请求都会先经过这里然后再发出去
 axios.interceptors.request.use(config => {

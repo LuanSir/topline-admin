@@ -44,7 +44,9 @@
       <!-- table表格是个组件，不需要手动创建遍历只需要把数据给el-table的data属性就行了
           然后配置el-table-column展示需要的数据字段即可
       -->
-      <el-table class="list-table" :data="articles" style="width: 100%">
+      <!-- element提供了自定义属性v-loading，用在表格里，换页、加载时禁用，
+      配合分页禁用一起使用，和分页禁用的属性值同步 -->
+      <el-table class="list-table" v-loading="articleLoading" :data="articles" style="width: 100%">
         <el-table-column prop="cover.images[0]" label="封面" width="180">
           <!-- 表格列默认只能输出文本，如果需要自定义里面的内容，则需要 -->
           <!-- slot-scope是插槽作用域，值scope是起的名字，scope中有个成员叫row
@@ -71,6 +73,7 @@
         background
         layout="prev, pager, next"
         :total="totalCount"
+        :disabled="articleLoading"
         @current-change="handleCurrentChange"
       ></el-pagination>
     </el-card>
@@ -97,7 +100,8 @@ export default {
         desc: '',
         value1: ''
       },
-      totalCount: 0
+      totalCount: 0,
+      articleLoading: false // 分页组件禁用属性disabled的默认值false
       // tableData: [
       //   {
       //     date: "2016-05-02",
@@ -132,6 +136,8 @@ export default {
   },
   methods: {
     loadArticles (page = 1) {
+      // 当发送请求的时候，分页组件禁用，disabled属性为true
+      this.articleLoading = true
       // 参数默认值
       this.$http({
         method: 'GET',
@@ -148,6 +154,7 @@ export default {
         // console.log(data);
         this.articles = data.results // 列表数据
         this.totalCount = data.total_count // 总记录数
+        this.articleLoading = false // 当请求完成，分页组件解禁，disabled属性值为false
       })
     },
     handleCurrentChange (page) {
