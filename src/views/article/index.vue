@@ -4,7 +4,7 @@
     <el-card class="filter-card">
       <div slot="header" class="clearfix">
         <span>全部图文</span>
-        <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+        <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
       </div>
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="文章状态">
@@ -38,8 +38,8 @@
     <!-- 列表区 -->
     <el-card class="list-card">
       <div slot="header" class="clearfix">
-        <span>卡片名称</span>
-        <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+        <span>共找到15条符合条件的内容</span>
+        <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
       </div>
       <!-- table表格是个组件，不需要手动创建遍历只需要把数据给el-table的data属性就行了
           然后配置el-table-column展示需要的数据字段即可
@@ -61,6 +61,13 @@
         <el-table-column prop="title" label="标题" width="180"></el-table-column>
         <el-table-column prop="pubdate" label="发布日期" width="180"></el-table-column>
         <el-table-column prop="status" label="状态"></el-table-column>
+        <el-table-column label="状态">
+          <template slot-scope="scope">
+            <el-button type="success" plain>修改</el-button>
+            <!-- scope.row是数据项 -->
+            <el-button type="danger" plain @click="handleDelete(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <!-- 分页 -->
       <!-- -、分多少页
@@ -135,6 +142,7 @@ export default {
     this.loadArticles()
   },
   methods: {
+    // 请求文章
     loadArticles (page = 1) {
       // 当发送请求的时候，分页组件禁用，disabled属性为true
       this.articleLoading = true
@@ -161,6 +169,35 @@ export default {
       // console.log(page)
       // 当页码发生改变的时候，请求改页码对应的数据
       this.loadArticles(page)
+    },
+    // 删除
+    handleDelete (article) {
+      this.$confirm('确认删除么？', '删除提示', {
+        $confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 确定执行,发送删除请求
+        this.$http({
+          method: 'DELETE',
+          url: `/articles/${article.id}` // 不是query参数，所以要在路径后拼接，query参数可以写到params中
+
+        }).then(data => {
+          // 提示删除成功
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+
+          // 重新加载数据列表
+          this.loadArticles(this.page)
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          messagee: '已取消删除'
+        })
+      })
     },
     onSubmit () {
       console.log('submit!')
