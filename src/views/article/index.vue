@@ -3,14 +3,14 @@
     <!-- 筛选区 -->
     <el-card class="filter-card">
       <div slot="header" class="clearfix">
-        <span>全部图文</span>
+        <span>筛选条件</span>
         <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
       </div>
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="文章状态">
           <el-radio-group v-model="form.resource">
-            <el-radio label="线上品牌商赞助"></el-radio>
-            <el-radio label="线下场地免费"></el-radio>
+            <el-radio label="全部"></el-radio>
+            <el-radio label="草稿"></el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="活动区域">
@@ -45,7 +45,7 @@
           然后配置el-table-column展示需要的数据字段即可
       -->
       <!-- element提供了自定义属性v-loading，用在表格里，换页、加载时禁用，
-      配合分页禁用一起使用，和分页禁用的属性值同步 -->
+      配合分页禁用一起使用，和分页禁用的属性值同步-->
       <el-table class="list-table" v-loading="articleLoading" :data="articles" style="width: 100%">
         <el-table-column prop="cover.images[0]" label="封面" width="180">
           <!-- 表格列默认只能输出文本，如果需要自定义里面的内容，则需要 -->
@@ -60,8 +60,12 @@
 
         <el-table-column prop="title" label="标题" width="180"></el-table-column>
         <el-table-column prop="pubdate" label="发布日期" width="180"></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
         <el-table-column label="状态">
+          <template slot-scope="scope">
+            <el-tag :type="statTypes[scope.row.status].type">{{ statTypes[scope.row.status].label }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="success" plain>修改</el-button>
             <!-- scope.row是数据项 -->
@@ -108,29 +112,30 @@ export default {
         value1: ''
       },
       totalCount: 0,
-      articleLoading: false // 分页组件禁用属性disabled的默认值false
-      // tableData: [
-      //   {
-      //     date: "2016-05-02",
-      //     name: "王小虎",
-      //     address: "上海市普陀区金沙江路 1518 弄"
-      //   },
-      //   {
-      //     date: "2016-05-04",
-      //     name: "王小虎",
-      //     address: "上海市普陀区金沙江路 1517 弄"
-      //   },
-      //   {
-      //     date: "2016-05-01",
-      //     name: "王小虎",
-      //     address: "上海市普陀区金沙江路 1519 弄"
-      //   },
-      //   {
-      //     date: "2016-05-03",
-      //     name: "王小虎",
-      //     address: "上海市普陀区金沙江路 1516 弄"
-      //   }
-      // ]
+      articleLoading: false, // 分页组件禁用属性disabled的默认值false
+      page: 1,
+      statTypes: [
+        {
+          type: 'info',
+          label: '草稿'
+        },
+        {
+          type: '',
+          label: '待审核'
+        },
+        {
+          type: 'success',
+          label: '审核通过'
+        },
+        {
+          type: 'warning',
+          label: '审核失败'
+        },
+        {
+          type: 'danger',
+          label: '已删除'
+        }
+      ]
     }
   },
 
@@ -176,28 +181,29 @@ export default {
         $confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        // 确定执行,发送删除请求
-        this.$http({
-          method: 'DELETE',
-          url: `/articles/${article.id}` // 不是query参数，所以要在路径后拼接，query参数可以写到params中
-
-        }).then(data => {
-          // 提示删除成功
-          this.$message({
-            type: 'success',
-            message: '删除成功'
-          })
-
-          // 重新加载数据列表
-          this.loadArticles(this.page)
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          messagee: '已取消删除'
-        })
       })
+        .then(() => {
+          // 确定执行,发送删除请求
+          this.$http({
+            method: 'DELETE',
+            url: `/articles/${article.id}` // 不是query参数，所以要在路径后拼接，query参数可以写到params中
+          }).then(data => {
+            // 提示删除成功
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+
+            // 重新加载数据列表
+            this.loadArticles(this.page)
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            messagee: '已取消删除'
+          })
+        })
     },
     onSubmit () {
       console.log('submit!')
