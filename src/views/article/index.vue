@@ -9,14 +9,22 @@
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="文章状态">
           <el-radio-group v-model="form.resource">
-            <el-radio label="全部"></el-radio>
-            <el-radio label="草稿"></el-radio>
+            <el-radio
+              v-for="item in statTypes"
+              :key="item.label"
+              :label="item.label"
+            >
+            </el-radio>
+            <!-- <el-radio label="草稿"></el-radio>
+            <el-radio label="待审核"></el-radio>
+            <el-radio label="审核通过"></el-radio>
+            <el-radio label="审核失败"></el-radio> -->
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+        <el-form-item label="频道列表">
+          <el-select v-model="form.region" placeholder="请选择频道">
+            <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="活动时间">
@@ -62,6 +70,7 @@
         <el-table-column prop="pubdate" label="发布日期" width="180"></el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
+            <!-- 显示状态使用了tag组件 -->
             <el-tag :type="statTypes[scope.row.status].type">{{ statTypes[scope.row.status].label }}</el-tag>
           </template>
         </el-table-column>
@@ -135,7 +144,8 @@ export default {
           type: 'danger',
           label: '已删除'
         }
-      ]
+      ],
+      channels: []
     }
   },
 
@@ -144,7 +154,10 @@ export default {
   // token说明:在Authorization 请求头中携带的token，格式为"Bearer "拼接上token，注意Bearer后有一个空格
   // token在本地储存的user_info中，所以要先拿到本地存储
   created () {
+    // 加载文章列表
     this.loadArticles()
+    // 加载频道列表
+    this.loadChannels()
   },
   methods: {
     // 请求文章
@@ -204,6 +217,16 @@ export default {
             messagee: '已取消删除'
           })
         })
+    },
+    // 频道列表
+    loadChannels () {
+      this.$http({
+        method: 'GET',
+        url: '/channels'
+      }).then(data => {
+        // console.log(data)
+        this.channels = data.channels
+      })
     },
     onSubmit () {
       console.log('submit!')

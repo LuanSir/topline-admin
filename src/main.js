@@ -15,8 +15,8 @@ import JSONbig from 'json-bigint'
 // 也就是说配置了这个东西，你就不用每次都写长长的 http://xxxx
 // 只需要，例如 axios({ url: '/authorizations' })
 // 路径中的 / ，多退少补
-// axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
-axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
+axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+// axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
 
 // 使用 JSONbig 处理返回数据中超出 JavaScript 安全整数范围的数字
 // JSONbig 自己会分析数据中的哪个数字超出范围了
