@@ -6,7 +6,7 @@
         <span>筛选条件</span>
         <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
       </div>
-      <el-form ref="form" label-width="80px">
+      <el-form ref="form" :model="filterParams" label-width="80px">
         <el-form-item label="文章状态">
           <el-radio-group v-model="filterParams.status">
             <el-radio label="全部" value=""></el-radio>
@@ -24,6 +24,7 @@
         </el-form-item>
         <el-form-item label="频道列表">
           <el-select v-model="filterParams.channel_id" placeholder="请选择频道">
+            <el-option label="全部" value=""></el-option>
             <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
@@ -91,11 +92,15 @@
            二：页面改变加载对应的页码数据
       -->
       <!-- @current-change分页组件的自定义事件，页码改变事件 -->
+      <!-- current-page是分页组件的一个属性，用来控制分页页码高亮用的，表示当前页码，也就是高亮的那个页码
+            total是总记录数
+      -->
       <el-pagination
         background
         layout="prev, pager, next"
         :total="totalCount"
         :disabled="articleLoading"
+        :current-page="page"
         @current-change="handleCurrentChange"
       ></el-pagination>
     </el-card>
@@ -194,6 +199,8 @@ export default {
       })
     },
     handleCurrentChange (page) {
+      // 绑定数据
+      this.page = page
       // console.log(page)
       // 当页码发生改变的时候，请求改页码对应的数据
       this.loadArticles(page)
@@ -245,8 +252,8 @@ export default {
     },
     onSubmit () {
       // console.log('submit!')
-      // this.page = 1
-      this.loadArticles()
+      this.page = 1 // 让分页组件的页码回到第一页
+      this.loadArticles() // 加载第一页的数据
     }
   }
 }
