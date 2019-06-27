@@ -6,11 +6,16 @@
         <span>筛选条件</span>
         <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
       </div>
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form ref="form" label-width="80px">
         <el-form-item label="文章状态">
           <el-radio-group v-model="filterParams.status">
-            <el-radio label="全部"></el-radio>
-            <el-radio v-for="item in statTypes" :key="item.label" :label="item.label"></el-radio>
+            <el-radio label="全部" value=""></el-radio>
+            <el-radio
+            v-for="(item, index) in statTypes"
+            :key="item.label"
+            :label="index + ''" >
+            {{ item.label }}
+            </el-radio>
             <!-- <el-radio label="草稿"></el-radio>
             <el-radio label="待审核"></el-radio>
             <el-radio label="审核通过"></el-radio>
@@ -36,14 +41,14 @@
           </el-col>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
+          <el-button :loading="articleLoading" type="primary" @click="onSubmit">查询</el-button>
         </el-form-item>
       </el-form>
     </el-card>
     <!-- 列表区 -->
     <el-card class="list-card">
       <div slot="header" class="clearfix">
-        <span>共找到15条符合条件的内容</span>
+        <span>共找到 <strong>{{ totalCount }}</strong> 条符合条件的内容</span>
         <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
       </div>
       <!-- table表格是个组件，不需要手动创建遍历只需要把数据给el-table的data属性就行了
@@ -106,21 +111,10 @@ export default {
   data () {
     return {
       articles: [],
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
-        value1: ''
-      },
       totalCount: 0, // 统计多少条数据
-      articleLoading: false, // 分页组件禁用属性disabled的默认值false
-      page: 1,
-      statTypes: [
+      articleLoading: false, // 分页组件禁用属性disabled的默认值false,控制文章加载中的loading
+      page: 1, // 当前页码
+      statTypes: [ // 文章状态
         {
           type: 'info',
           label: '草稿'
@@ -149,7 +143,7 @@ export default {
         begin_pubdate: '', // 开始时间
         end_pubdate: '' // 结束时间
       },
-      begin_end_pubdate: []
+      begin_end_pubdate: [] // 存储日期选择器同步的[开始时间，结束时间]，这个字段没啥用，只是日期选择器必须v-modle绑定一个数据才会触发change
     }
   },
 
@@ -168,6 +162,15 @@ export default {
     loadArticles (page = 1) {
       // 当发送请求的时候，分页组件禁用，disabled属性为true
       this.articleLoading = true
+
+      // 过滤出有效的查询条件字段
+      const filterData = {}
+      for (let key in this.filterParams) {
+        if (this.filterParams[key]) {
+          filterData[key] = this.filterParams[key]
+        }
+      }
+
       // 参数默认值
       this.$http({
         method: 'GET',
@@ -175,7 +178,10 @@ export default {
         params: {
           // query查询数据写到这里传输
           page, // 请求数据的页码，不传默认为1
-          per_page: 10 // 请求数据的每页大小，不传默认为0
+          per_page: 10, // 请求数据的每页大小，不传默认为0
+          // 将对象混入当前对象，就是对象拷贝
+          // ...this.filterParams
+          ...filterData
         }
         // headers: { // 自定义发送请求头,字段名必须叫Authorization,
         //   Authorization: `Bearer ${userinfo.token}`
@@ -238,7 +244,9 @@ export default {
       this.filterParams.end_pubdate = value[1]
     },
     onSubmit () {
-      console.log('submit!')
+      // console.log('submit!')
+      // this.page = 1
+      this.loadArticles()
     }
   }
 }
