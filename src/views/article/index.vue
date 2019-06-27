@@ -8,29 +8,26 @@
       </div>
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="文章状态">
-          <el-radio-group v-model="form.resource">
-            <el-radio
-              v-for="item in statTypes"
-              :key="item.label"
-              :label="item.label"
-            >
-            </el-radio>
+          <el-radio-group v-model="filterParams.status">
+            <el-radio label="全部"></el-radio>
+            <el-radio v-for="item in statTypes" :key="item.label" :label="item.label"></el-radio>
             <!-- <el-radio label="草稿"></el-radio>
             <el-radio label="待审核"></el-radio>
             <el-radio label="审核通过"></el-radio>
-            <el-radio label="审核失败"></el-radio> -->
+            <el-radio label="审核失败"></el-radio>-->
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表">
-          <el-select v-model="form.region" placeholder="请选择频道">
-            <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id">
-            </el-option>
+          <el-select v-model="filterParams.channel_id" placeholder="请选择频道">
+            <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="活动时间">
           <el-col :span="11">
             <el-date-picker
-              v-model="form.value1"
+              value-format="yyyy-MM-dd"
+              v-model="begin_end_pubdate"
+              @change="handleDataChange"
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -120,7 +117,7 @@ export default {
         desc: '',
         value1: ''
       },
-      totalCount: 0,
+      totalCount: 0, // 统计多少条数据
       articleLoading: false, // 分页组件禁用属性disabled的默认值false
       page: 1,
       statTypes: [
@@ -145,7 +142,14 @@ export default {
           label: '已删除'
         }
       ],
-      channels: []
+      channels: [],
+      filterParams: { // 用来过滤查询文章列表的参数
+        status: '', // 文章状态
+        channel_id: '', // 频道id
+        begin_pubdate: '', // 开始时间
+        end_pubdate: '' // 结束时间
+      },
+      begin_end_pubdate: []
     }
   },
 
@@ -227,6 +231,11 @@ export default {
         // console.log(data)
         this.channels = data.channels
       })
+    },
+    // 日期选择组件改变事件
+    handleDataChange (value) {
+      this.filterParams.begin_pubdate = value[0]
+      this.filterParams.end_pubdate = value[1]
     },
     onSubmit () {
       console.log('submit!')
