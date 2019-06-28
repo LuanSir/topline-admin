@@ -23,10 +23,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表">
-          <el-select v-model="filterParams.channel_id" placeholder="请选择频道">
+          <article-channel v-model="filterParams.channel_id"></article-channel>
+          <!-- 用下拉列表组件替换这里写的下拉列表 -->
+          <!-- <el-select v-model="filterParams.channel_id" placeholder="请选择频道">
             <el-option label="全部" value=""></el-option>
             <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
+          </el-select> -->
         </el-form-item>
         <el-form-item label="活动时间">
           <el-col :span="11">
@@ -111,8 +113,12 @@
 // 获取本地储存用户登录信息
 // 调用JSON.parse（）方法是把JSON字符串转换成对象
 // const userinfo = JSON.parse(window.localStorage.getItem('user_info'))
+import ArticleChannel from '@/components/article-channel'
 export default {
   name: 'ArticleList',
+  components: {
+    ArticleChannel
+  },
   data () {
     return {
       articles: [],
@@ -141,7 +147,7 @@ export default {
           label: '已删除'
         }
       ],
-      channels: [],
+      // channels: [],
       filterParams: { // 用来过滤查询文章列表的参数
         status: '', // 文章状态
         channel_id: '', // 频道id
@@ -159,8 +165,8 @@ export default {
   created () {
     // 加载文章列表
     this.loadArticles()
-    // 加载频道列表
-    this.loadChannels()
+    // // 加载频道列表
+    // this.loadChannels()
   },
   methods: {
     // 请求文章
@@ -237,15 +243,15 @@ export default {
         })
     },
     // 频道列表
-    loadChannels () {
-      this.$http({
-        method: 'GET',
-        url: '/channels'
-      }).then(data => {
-        // console.log(data)
-        this.channels = data.channels
-      })
-    },
+    // loadChannels () {
+    //   this.$http({
+    //     method: 'GET',
+    //     url: '/channels'
+    //   }).then(data => {
+    //     // console.log(data)
+    //     this.channels = data.channels
+    //   })
+    // },
     // 日期选择组件改变事件
     handleDataChange (value) {
       this.filterParams.begin_pubdate = value[0]

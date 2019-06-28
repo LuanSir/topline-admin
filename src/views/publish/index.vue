@@ -18,17 +18,40 @@
       <el-form-item label="封面">
       </el-form-item>
       <el-form-item label="频道">
-        <el-select v-model="articleForm.channel_id" placeholder="请选择频道">
+        <!--
+          利用组件通信，传递数据，父传子：Props Down,
+                                子传父：Events Up
+          这里value是向article-channel组件传值，
+          $event 在这是事件参数
+         -->
+        <!-- <article-channel
+         :value="articleForm.channel_id"
+         @input="articleForm.channel_id = $event"
+        ></article-channel> -->
+        <!--
+          v-model="articleForm.channel_id"
+           在这就是:value="articleForm.channel_id"
+                  @input="articleForm.channel_id = $event"
+          的简写
+         -->
+        <article-channel
+         v-model="articleForm.channel_id"
+        ></article-channel>
+        <!-- <el-select v-model="articleForm.channel_id" placeholder="请选择频道">
           <el-option label="频道一" value="shanghai"></el-option>
-        </el-select>
+        </el-select> -->
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 
 <script>
+import ArticleChannel from '@/components/article-channel'
 export default {
   name: 'publish',
+  components: {
+    ArticleChannel
+  },
   data () {
     return {
       articleForm: {
