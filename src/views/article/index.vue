@@ -81,7 +81,14 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="success" plain>修改</el-button>
+            <!-- <el-button type="success" plain @click="$router.push({
+              name: 'publish-editor',
+              params: {
+                id: scope.row.id
+              }
+            })">修改</el-button>
+            或者 -->
+            <el-button type="success" plain @click="$router.push(`/publish/${scope.row.id}`)">修改</el-button>
             <!-- scope.row是数据项 -->
             <el-button type="danger" plain @click="handleDelete(scope.row)">删除</el-button>
           </template>

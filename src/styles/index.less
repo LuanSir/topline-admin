@@ -6,3 +6,8 @@
 html, body {
     height: 100%;
 }
+// 由于富文本编辑器的样式在组件里，直接在使用的publish组件里添加样式需要去掉样式的作用域，或者把样式写到styles的样式里
+.ql-editor {
+    height: 200px !important;
+    overflow: scroll;
+}
