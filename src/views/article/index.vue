@@ -207,6 +207,7 @@ export default {
     },
     // 删除
     handleDelete (article) {
+      console.log(article)
       this.$confirm('确认删除么？', '删除提示', {
         $confirmButtonText: '确定',
         cancelButtonText: '取消',
