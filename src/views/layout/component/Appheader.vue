@@ -11,7 +11,11 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人信息</el-dropdown-item>
           <el-dropdown-item>git地址</el-dropdown-item>
-          <el-dropdown-item divided>退出</el-dropdown-item>
+          <!-- <el-dropdown-item divided>退出</el-dropdown-item> -->
+          <el-dropdown-item @click.native="handleLogout">退出</el-dropdown-item>
+          <!--
+
+          -->
         </el-dropdown-menu>
       </el-dropdown>
     </el-col>
@@ -31,6 +35,35 @@ export default {
   created () {
     this.userinfo = JSON.parse(window.localStorage.getItem('user_info'))
     // console.log(this.userinfo)
+  },
+  methods: {
+    // 注册退出
+    handleLogout () {
+      // console.log(123)
+      this.$confirm('确认退出吗?', '退出提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          // 删除本地登录信息
+          window.localStorage.removeItem('user_info')
+          this.$message({
+            type: 'success',
+            message: '退出成功!'
+          })
+          // 跳转到登录页
+          this.$router.push({
+            name: 'login'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    }
   }
 }
 </script>

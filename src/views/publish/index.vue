@@ -8,7 +8,7 @@
         <el-button type="primary" @click="handlePulish(true)">存入草稿</el-button>
       </div>
     </div>
-    <el-form>
+    <el-form v-loading="$route.name === 'publish-edit' && editLoading">
       <el-form-item label="标题">
         <el-input type="text" v-model="articleForm.title"></el-input>
       </el-form-item>
@@ -20,9 +20,6 @@
         v-model="articleForm.content"
         ref="myQuillEditor"
         :options="editorOption"
-        @blur="onEditorBlur($event)"
-        @focus="onEditorFocus($event)"
-        @ready="onEditorReady($event)"
       ></quill-editor>
       <el-form-item label="封面"></el-form-item>
       <el-form-item label="频道">
@@ -77,9 +74,10 @@ export default {
         },
         channel_id: 3 // 频道
       },
-      editorOption: {
+      editorOption: { // 富文本编辑器相关参数选项
         // some quill options
-      }
+      },
+      editLoading: false
     }
   },
   // 计算属性
@@ -91,7 +89,26 @@ export default {
   mounted () {
     console.log('this is current quill instance object', this.editor)
   },
+  created () {
+    // console.log(this.$router)
+    if (this.$route.name === 'publish-editor') {
+      this.loadArticle()
+    }
+  },
   methods: {
+    loadArticle () {
+      this.editLoading = true
+      this.$http({
+        method: 'GET',
+        url: `/articles/${this.$route.params.id}`
+      }).then(data => {
+        this.articleForm = data
+        this.editLoading = false
+      }).catch(() => {
+        // console.log(err)
+        this.$message.error('加载文章详情失败')
+      })
+    },
     // 给个默认值，防止不传参
     handlePulish (draft = false) {
       // console.log(this.articleForm)
