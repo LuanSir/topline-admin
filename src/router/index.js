@@ -37,10 +37,15 @@ const router = new Router({
           path: '/publish/:id',
           component: () => import('@/views/publish')
         },
-        {
+        { // 文章列表
           name: 'article_list',
           path: '/article',
           component: () => import('@/views/article')
+        },
+        { // 评论列表
+          name: 'article-comment',
+          path: '/comments',
+          component: () => import('@/views/comment')
         }
       ]
     },

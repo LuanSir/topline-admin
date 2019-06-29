@@ -34,7 +34,7 @@
         <el-menu-item index="/article">文章列表</el-menu-item>
       </el-menu-item-group>
       <!-- <el-menu-item-group title="分组2"> -->
-        <el-menu-item index="2-3">评论列表</el-menu-item>
+        <el-menu-item index="/comments">评论列表</el-menu-item>
       <!-- </el-menu-item-group> -->
       <el-submenu index="2-4">
         <template slot="title">素材管理</template>
