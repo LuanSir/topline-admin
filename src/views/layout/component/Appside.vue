@@ -59,7 +59,7 @@
         <!-- <el-menu-item index="3-4-1">选项1</el-menu-item> -->
       </el-submenu>
     </el-submenu>
-    <el-menu-item index="4">
+    <el-menu-item index="/account">
       <i class="el-icon-menu"></i>
       <span slot="title">账户信息</span>
     </el-menu-item>
