@@ -67,6 +67,7 @@ export default {
     this.loadUserinFo()
   },
   methods: {
+    // 获取用户信息
     loadUserinFo () {
       this.$http({
         method: 'GET',
@@ -75,6 +76,7 @@ export default {
         this.userInfo = data
       })
     },
+    // 更新用户信息
     handleUpdata () {
       const { name, intro } = this.userInfo
       this.$http({
@@ -98,6 +100,7 @@ export default {
     },
     handleAvatarSuccess () {},
     beforeAvatarUpload () {},
+    // 上传头像
     handleUpload (uploadConfig) {
       // console.log(uploadConfig)
       // axios 上传文件

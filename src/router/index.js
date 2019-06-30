@@ -47,10 +47,15 @@ const router = new Router({
           path: '/comments',
           component: () => import('@/views/comment')
         },
-        { // 评论列表
+        { // 用户信息
           name: 'account-setting',
           path: '/account',
           component: () => import('@/views/account')
+        },
+        { // 素材列表
+          name: 'image-list',
+          path: '/image',
+          component: () => import('@/views/image')
         }
       ]
     },

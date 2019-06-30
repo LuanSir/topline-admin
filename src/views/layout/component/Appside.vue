@@ -34,13 +34,19 @@
         <el-menu-item index="/article">文章列表</el-menu-item>
       </el-menu-item-group>
       <!-- <el-menu-item-group title="分组2"> -->
-        <el-menu-item index="/comments">评论列表</el-menu-item>
+      <el-menu-item index="/comments">评论列表</el-menu-item>
       <!-- </el-menu-item-group> -->
-      <el-submenu index="2-4">
-        <template slot="title">素材管理</template>
-        <!-- <el-menu-item index="2-4-1">选项1</el-menu-item> -->
-      </el-submenu>
+      <!-- <el-submenu index="2-4">
+      <template slot="title">素材管理</template>-->
+      <!-- <el-menu-item index="2-4-1">选项1</el-menu-item> -->
+      <!-- </el-submenu> -->
     </el-submenu>
+    <el-menu-item index="/image">
+      <!-- <template slot="title"> -->
+      <i class="el-icon-location"></i>
+      <span>素材管理</span>
+      <!-- </template> -->
+    </el-menu-item>
     <el-submenu index="3">
       <template slot="title">
         <i class="el-icon-location"></i>
@@ -52,7 +58,7 @@
         <el-menu-item index="3-2">粉丝概况</el-menu-item>
       </el-menu-item-group>
       <!-- <el-menu-item-group title="分组2"> -->
-        <el-menu-item index="3-3">粉丝画像</el-menu-item>
+      <el-menu-item index="3-3">粉丝画像</el-menu-item>
       <!-- </el-menu-item-group> -->
       <el-submenu index="3-4">
         <template slot="title">粉丝列表</template>
