@@ -87,7 +87,9 @@ export default {
           intro
         }
       })
-        .then(() => {
+        .then((data) => {
+          // 提交 mutation，修改容器中用户信息
+          this.$store.commit('changeUser', data)
           this.$message({
             type: 'success',
             message: '更新数据成功'
@@ -115,9 +117,11 @@ export default {
         url: '/user/photo',
         data: formData
       })
-        .then((data) => {
+        .then(data => {
           // console.log(uploadConfig.file)
           this.userInfo.photo = data.photo
+          // 将修改之后的照片信息同步到容器中
+          this.$store.commit('changeUser', this.userInfo)
           this.$message({
             type: 'success',
             message: '上传成功'

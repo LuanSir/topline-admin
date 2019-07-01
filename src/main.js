@@ -3,6 +3,9 @@ import App from './App.vue'
 // 查找文件
 import router from './router/index'
 import Element from 'element-ui'
+
+// import store from './store'
+
 // 加载第三方包资源不需要写相对路径，直接包名/路径即可
 import 'element-ui/lib/theme-chalk/index.css'
 import './styles/index.less'
@@ -10,6 +13,7 @@ import 'nprogress/nprogress.css'
 import axios from 'axios'
 // 在拦截器中统一处理要删除的项的超大id
 import JSONbig from 'json-bigint'
+import store from './store/index.js'
 
 // 配置axios的基本路由，
 // 也就是说配置了这个东西，你就不用每次都写长长的 http://xxxx
@@ -103,5 +107,6 @@ Vue.use(Element)
 
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
