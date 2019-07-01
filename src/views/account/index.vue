@@ -109,12 +109,14 @@ export default {
       // 2. 将FormData配置到请求体data中
       const formData = new FormData()
       formData.append('photo', uploadConfig.file)
+
       this.$http({
         method: 'PATCH',
         url: '/user/photo',
         data: formData
       })
         .then((data) => {
+          // console.log(uploadConfig.file)
           this.userInfo.photo = data.photo
           this.$message({
             type: 'success',
