@@ -21,7 +21,21 @@
         ref="myQuillEditor"
         :options="editorOption"
       ></quill-editor>
-      <el-form-item label="封面"></el-form-item>
+      <el-form-item label="封面">
+        <el-radio-group v-model="articleForm.cover.type">
+          <el-radio :label="1">单图</el-radio>
+          <el-radio :label="3">三图</el-radio>
+          <el-radio :label="0">无图</el-radio>
+          <el-radio :label="-1">自动</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <template>
+        <el-row>
+          <el-col :span="6">
+            <UploadImage></UploadImage>
+          </el-col>
+        </el-row>
+      </template>
       <el-form-item label="频道">
         <!--
           利用组件通信，传递数据，父传子：Props Down,
@@ -50,6 +64,7 @@
 
 <script>
 import ArticleChannel from '@/components/article-channel'
+import UploadImage from './components/upload-image'
 // 加载富文本编辑器
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -60,7 +75,8 @@ export default {
   name: 'publish',
   components: {
     ArticleChannel,
-    quillEditor
+    quillEditor,
+    UploadImage
   },
   data () {
     return {
